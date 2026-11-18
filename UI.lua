@@ -123,11 +123,11 @@ local function ScrollList(parent, rowH, fill, onClick)
         row.icon = row:CreateTexture(nil, "ARTWORK")
         row.icon:SetSize(rowH - 4, rowH - 4)
         row.icon:SetPoint("LEFT", 2, 0)
-        row.left = Label(row, "GameFontHighlightSmall")
+        row.left = Label(row, "GameFontHighlight")
         row.left:SetPoint("LEFT", row.icon, "RIGHT", 4, 0)
         row.left:SetJustifyH("LEFT")
         row.left:SetWordWrap(false)
-        row.right = Label(row, "GameFontHighlightSmall")
+        row.right = Label(row, "GameFontHighlight")
         row.right:SetPoint("RIGHT", -4, 0)
         row.right:SetJustifyH("RIGHT")
         row.left:SetPoint("RIGHT", row.right, "LEFT", -6, 0)
@@ -335,7 +335,18 @@ local function CreatePlanner(parent, key)
     RefreshAll()
   end)
   f.create:SetPoint("TOPLEFT", 8, -(164 + T))
-  f.create:SetPoint("RIGHT", f, "RIGHT", -8, 0)
+  f.create:SetPoint("RIGHT", f, "RIGHT", -8 - 2 * 64, 0)
+  f.lists = Button(f, "Lists", 60, 26, function() ns.ShowSavedLists() end)
+  f.lists:SetPoint("TOPRIGHT", -8, -(164 + T))
+  Tip(f.lists, "Saved lists", { "Open a list you saved, on any character of this account.", "It is priced again with today's prices." })
+  f.save = Button(f, "Save", 60, 26, function()
+    if not state.plan then return end
+    local o = state.plan.opts
+    local default = state.plan.savedName or ("%s %d-%d"):format(ns.ProfName(ns.PROF_BY_ID[o.prof]), o.from, o.to)
+    StaticPopup_Show("SKILLRAT_SAVE_LIST", nil, nil, default)
+  end)
+  f.save:SetPoint("RIGHT", f.lists, "LEFT", -4, 0)
+  Tip(f.save, "Save this list", { "Keep this list to use it again later or on another character." })
 
   -- the list of crafts
   local stepsBox = Inset(f)
@@ -380,7 +391,16 @@ local function CreatePlanner(parent, key)
     else
       avail = "|cffff5555not scanned|r"
     end
-    row.left:SetText(("|cffffd100%d|r %s  %s"):format(x.need, ns.ItemName(x.id) or ("item " .. x.id), avail))
+    local have = (C_Item and C_Item.GetItemCount and C_Item.GetItemCount(x.id)) or (GetItemCount and GetItemCount(x.id)) or 0
+    local bag
+    if have >= x.need then
+      bag = "|cff55ff55you have it|r"
+    elseif have > 0 then
+      bag = ("|cffffd100you have %d/%d|r"):format(have, x.need)
+    else
+      bag = ""
+    end
+    row.left:SetText(("|cffffd100%d|r %s  %s  %s"):format(x.need, ns.ItemName(x.id) or ("item " .. x.id), avail, bag))
     row.right:SetText(x.cost and ns.Money(x.cost) or "")
   end, function(x) ns.Scanner.SearchInAH(x.id) end)
   f.reags:SetPoint("TOPLEFT", 4, -4)
@@ -453,6 +473,7 @@ local function CreatePlanner(parent, key)
     self.scanProf:SetEnabled(ahOpen and not ns.Scanner.busy)
     self.scanAll:SetEnabled(ahOpen and not ns.Scanner.busy)
     self.searchAll:SetEnabled(ahOpen and state.plan ~= nil)
+    self.save:SetEnabled(state.plan ~= nil)
     local n = 0
     for _ in pairs(ns.DB().excluded[prof] or {}) do n = n + 1 end
     self.exclude:SetText(n > 0 and ("Excluded: %d"):format(n) or "Exclude reagents")
@@ -578,6 +599,83 @@ function ns.ShowExclusions(profID)
   table.sort(items, function(a, b) return (ns.ItemName(a) or "") < (ns.ItemName(b) or "") end)
   f.items = items
   f.list:SetData(items)
+  f:Show()
+end
+
+---------------------------------------------------------------------------
+-- Saved lists (account-wide)
+---------------------------------------------------------------------------
+StaticPopupDialogs["SKILLRAT_SAVE_LIST"] = {
+  text = "Name of this list:",
+  button1 = SAVE or "Save", button2 = CANCEL or "Cancel",
+  hasEditBox = true, maxLetters = 60, timeout = 0, whileDead = true, hideOnEscape = true,
+  OnShow = function(self, default)
+    local eb = self.editBox or self.EditBox
+    eb:SetText(default or ""); eb:HighlightText(); eb:SetFocus()
+  end,
+  OnAccept = function(self)
+    local eb = self.editBox or self.EditBox
+    local name = eb:GetText()
+    if not state.plan or name == "" then return end
+    local db = ns.DB()
+    db.lists = db.lists or {}
+    for i = #db.lists, 1, -1 do if db.lists[i].name == name then table.remove(db.lists, i) end end
+    table.insert(db.lists, 1, ns.Planner.ToSaved(state.plan, name))
+    state.plan.savedName = name
+    ns.Print("list saved: " .. name)
+    if ns.listsFrame and ns.listsFrame:IsShown() then ns.listsFrame:Refresh() end
+  end,
+  EditBoxOnEnterPressed = function(self)
+    local p = self:GetParent()
+    StaticPopupDialogs["SKILLRAT_SAVE_LIST"].OnAccept(p)
+    p:Hide()
+  end,
+}
+
+function ns.ShowSavedLists()
+  local f = ns.listsFrame
+  if not f then
+    local framed
+    f, framed = Window(UIParent, 340, 380, "Saved lists")
+    f:SetPoint("CENTER")
+    f:SetFrameStrata("DIALOG")
+    f:EnableMouse(true)
+    f:SetMovable(true)
+    f:RegisterForDrag("LeftButton")
+    f:SetScript("OnDragStart", f.StartMoving)
+    f:SetScript("OnDragStop", f.StopMovingOrSizing)
+    local hint = Label(f, "GameFontDisableSmall", "Click: open the list. Right-click: delete it.")
+    hint:SetPoint("TOPLEFT", framed and 64 or 10, -34)
+    local box = Inset(f)
+    box:SetPoint("TOPLEFT", 8, framed and -62 or -50)
+    box:SetPoint("BOTTOMRIGHT", -8, 10)
+    f.list = ScrollList(box, ROW_H + 2, function(row, l)
+      local p = ns.PROF_BY_ID[l.opts.prof]
+      row.icon:SetTexture(p and ns.ProfIcon(p) or 134400)
+      row.left:SetText(l.name)
+      row.right:SetText(("|cffaaaaaa%d crafts  %s|r"):format(#(l.steps or {}), date("%d/%m", l.t or 0)))
+    end, function(l, index, mouse)
+      local db = ns.DB()
+      if mouse == "RightButton" then
+        table.remove(db.lists, index)
+        ns.Print("list deleted: " .. l.name)
+        f:Refresh()
+        return
+      end
+      state.prof = l.opts.prof
+      state.from, state.to, state.profForLevels = l.opts.from, l.opts.to, l.opts.prof
+      state.mode = l.opts.mode or state.mode
+      state.plan = ns.Planner.Rebuild(l)
+      state.step = nil
+      RefreshAll()
+      f:Hide()
+    end)
+    f.list:SetPoint("TOPLEFT", 4, -4)
+    f.list:SetPoint("BOTTOMRIGHT", -26, 4)
+    function f:Refresh() self.list:SetData(ns.DB().lists or {}) end
+    ns.listsFrame = f
+  end
+  f:Refresh()
   f:Show()
 end
 
@@ -807,12 +905,15 @@ local ah = CreateFrame("Frame")
 ah:RegisterEvent("AUCTION_HOUSE_SHOW")
 ah:RegisterEvent("AUCTION_HOUSE_CLOSED")
 pcall(ah.RegisterEvent, ah, "GET_ITEM_INFO_RECEIVED")
+pcall(ah.RegisterEvent, ah, "BAG_UPDATE_DELAYED")
 ah:SetScript("OnEvent", function(_, event)
   if event == "AUCTION_HOUSE_SHOW" then
     CreateAHTab()
     if ns.CharDB().pinned and state.plan then ns.ShowPinned(true) end
     RefreshAll()
   elseif event == "AUCTION_HOUSE_CLOSED" then
+    RefreshAll()
+  elseif event == "BAG_UPDATE_DELAYED" then
     RefreshAll()
   elseif event == "GET_ITEM_INFO_RECEIVED" then
     if not ah.pending then

@@ -41,6 +41,9 @@ The bottom of the list reads like a quote:
 
 _The SkillRat panel opens next to your profession window._
 
+*   Each reagent shows what you already have in your bags: **you have it** in green, or **you have 12/52**.
+*   **Save** a list and open it again later from **Lists**, on any character of your account. It is priced again with the prices of the day.
+
 ### ![](https://i.imgur.com/Ry7P4Pz.png) ___**Shop in one click**___
 
 At the Auction House, click a craft in the list: its reagents are shown in the Auction House, ready to buy. With Auctionator installed, all of them appear at once in its shopping tab. **Search all** does the same for the whole list.

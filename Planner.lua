@@ -131,7 +131,11 @@ function Planner.Build(opts)
     end
   end
 
-  -- whole crafts, then the exact cost of every reagent bought from scratch
+  return Planner.Finish(plan, order, market)
+end
+
+-- whole crafts, then the exact cost of every reagent bought from scratch
+function Planner.Finish(plan, order, market)
   local need = {}
   for _, step in ipairs(order) do
     step.crafts = math.max(1, math.ceil(step.crafts - 0.001))
@@ -154,6 +158,30 @@ function Planner.Build(opts)
   end
   plan.steps, plan.reagents, plan.total = order, list, total
   return plan
+end
+
+-- A saved list: { opts = {...}, steps = { { spell, from, to, crafts } } } -> a plan priced with today's prices
+function Planner.Rebuild(saved)
+  local byId = {}
+  for _, r in ipairs(ns.Recipes(saved.opts.prof) or {}) do byId[r[1]] = r end
+  local order = {}
+  for _, st in ipairs(saved.steps or {}) do
+    local r = byId[st.spell]
+    if r then order[#order + 1] = { recipe = r, from = st.from, to = st.to, crafts = st.crafts } end
+  end
+  local plan = { steps = {}, missing = {}, opts = saved.opts, savedName = saved.name }
+  return Planner.Finish(plan, order, NewMarket())
+end
+
+-- What to keep of a plan to save it
+function Planner.ToSaved(plan, name)
+  local steps = {}
+  for _, st in ipairs(plan.steps) do
+    steps[#steps + 1] = { spell = st.recipe[1], from = st.from, to = st.to, crafts = st.crafts }
+  end
+  local o = plan.opts
+  return { name = name, t = time(), steps = steps,
+           opts = { prof = o.prof, from = o.from, to = o.to, mode = o.mode, excluded = o.excluded } }
 end
 
 -- Reagents of one step (or the whole plan): { { id, need } }
