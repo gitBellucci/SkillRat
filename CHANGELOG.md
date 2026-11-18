@@ -1,3 +1,11 @@
+# 1.0.1
+
+- **Skill-up levels now come from WoW Forever's own game data**: the ~1,500 recipes Forever added or changed (First Aid potions, rebalanced Leatherworking...) now give the right number of crafts. Recreate your lists.
+- The bottom of the list reads like a quote: Auction House price, what the crafts sell for at a vendor, and the total in green (you make money) or red (what the leveling costs you).
+- Reagents in clear columns: quantity, name, source (Auction House or vendor), what you already have in your bags, cost.
+- **Save** your lists and open them again later from **Lists**, on any character of your account, priced with the prices of the day.
+- Bigger, easier to read list text.
+
 # 1.0.0
 
 - First release.

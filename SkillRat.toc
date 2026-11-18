@@ -2,7 +2,7 @@
 ## Title: SkillRat
 ## Notes: Level your professions for the fewest coins: cheapest craft list from Auction House prices and quantities.
 ## Author: Bellucci
-## Version: 1.0.0
+## Version: 1.0.1
 ## IconTexture: Interface\AddOns\SkillRat\Media\icon
 ## SavedVariables: SkillRatDB
 ## SavedVariablesPerCharacter: SkillRatCharDB
