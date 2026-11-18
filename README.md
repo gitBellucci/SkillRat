@@ -56,7 +56,7 @@ Pin the list to keep it on screen while you shop and craft, with the total cost 
 
 ### ![](https://i.imgur.com/TQzVxYy.png) ___**Good to know**___
 
-*   Recipe data (skill levels and reagents) comes from AtlasLoot Classic. Some recipes added for WoW Forever have no skill levels there yet: SkillRat estimates them and they are refined in updates.
+*   Skill-up levels (orange, yellow, green, grey) come from WoW Forever's own game data, including the recipes Forever added or changed. Recipes and reagents come from AtlasLoot Classic.
 *   Recipes that don't exist on Forever are hidden automatically.
 *   Open your profession window once so SkillRat knows which recipes you have learned.
 *   `/skillrat` opens SkillRat anywhere.
@@ -64,4 +64,5 @@ Pin the list to keep it on screen while you shop and craft, with the total cost 
 ### ![](https://i.imgur.com/pOgvzAP.png) ___**Credits**___
 
 *   Recipe data from **AtlasLoot Classic** by sliccer and contributors (GPL v2). SkillRat is GPL v2 as well.
+*   Skill-up levels: WoW Forever game data (SkillLineAbility table, read through wago.tools).
 *   Icons: Lorc and Delapouite, game-icons.net (CC BY 3.0).

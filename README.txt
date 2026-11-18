@@ -7,5 +7,5 @@ SkillRat - level your professions for the fewest coins (WoW Forever)
 - "Pin" keeps the list on screen. /skillrat opens SkillRat anywhere.
 - Open your profession window once so SkillRat knows your learned recipes.
 
-Recipe data: AtlasLoot Classic by sliccer and contributors (GPL v2). SkillRat is GPL v2 (see LICENSE).
+Recipe data: AtlasLoot Classic by sliccer and contributors (GPL v2). Skill-up levels: WoW Forever game data (SkillLineAbility, via wago.tools). SkillRat is GPL v2 (see LICENSE).
 Icon: generated for SkillRat. Description icons: game-icons.net (Lorc, Delapouite, CC BY 3.0).

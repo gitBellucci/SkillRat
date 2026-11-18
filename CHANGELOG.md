@@ -12,4 +12,4 @@
 - The bottom of the list reads like a quote: Auction House price, what the crafts sell for at a vendor, and the total in green (you make money) or red (what the leveling costs you).
 - Scan progress bar with a Stop button.
 - Vendor reagents use vendor prices, updated from the vendors you visit.
-- Recipe data from AtlasLoot Classic (GPL v2).
+- Skill-up levels from WoW Forever's own game data (the ~1,500 recipes Forever added or changed included); recipes and reagents from AtlasLoot Classic (GPL v2).
