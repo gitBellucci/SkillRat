@@ -2,7 +2,7 @@
 -- on its own (/skillrat); plus the pinned list and the reagent exclusion list.
 local _, ns = ...
 
-local W, H = 420, 630
+local W, H = 420, 650
 local ROW_H = 20
 local GOLD = { 0.84, 0.63, 0.13 }
 
@@ -390,30 +390,41 @@ local function CreatePlanner(parent, key)
   if key == "ah" then
     stepsBox:ClearAllPoints()
     stepsBox:SetPoint("TOPLEFT", 8, -196)
-    stepsBox:SetPoint("BOTTOMRIGHT", f, "BOTTOM", -4, 40)
+    stepsBox:SetPoint("BOTTOMRIGHT", f, "BOTTOM", -4, 70)
     f.reagTitle:ClearAllPoints()
     f.reagTitle:SetPoint("BOTTOMLEFT", reagBox, "TOPLEFT", 2, 4)
     reagBox:ClearAllPoints()
     reagBox:SetPoint("TOPLEFT", f, "TOP", 4, -214)
-    reagBox:SetPoint("BOTTOMRIGHT", -8, 40)
+    reagBox:SetPoint("BOTTOMRIGHT", -8, 70)
   end
 
-  -- footer
-  f.total = Label(f, "GameFontNormal", "")
-  f.total:SetPoint("BOTTOMLEFT", 10, 12)
-  -- vendor value of the crafted items and what is left once they are sold (negative: the leveling costs money)
-  f.vendor = Label(f, "GameFontNormal", "")
-  if key == "ah" then
-    f.vendor:SetPoint("LEFT", f.total, "RIGHT", 24, 0)
-  else
-    f.vendor:SetPoint("BOTTOMLEFT", 10, 32)
+  -- footer, like a quote: Auction House price, minus what the crafts sell for at a vendor, = total
+  local AMOUNT_X = 250    -- right edge of the amounts column
+  local function InvoiceLine(y, template)
+    local l = Label(f, template or "GameFontNormal", "")
+    l:SetPoint("BOTTOMLEFT", 12, y)
+    local a = Label(f, template or "GameFontHighlight", "")
+    a:SetPoint("BOTTOMRIGHT", f, "BOTTOMLEFT", AMOUNT_X, y)
+    a:SetJustifyH("RIGHT")
+    return l, a
   end
+  f.ahLabel, f.ahAmount = InvoiceLine(50)
+  f.vendLabel, f.vendAmount = InvoiceLine(31)
+  f.totLabel, f.totAmount = InvoiceLine(10, "GameFontNormalLarge")
+  f.invoiceRule = f:CreateTexture(nil, "ARTWORK")
+  f.invoiceRule:SetColorTexture(0.85, 0.65, 0.2, 0.8)
+  f.invoiceRule:SetHeight(1)
+  f.invoiceRule:SetPoint("BOTTOMLEFT", 12, 27)
+  f.invoiceRule:SetPoint("BOTTOMRIGHT", f, "BOTTOMLEFT", AMOUNT_X, 27)
+  f.total = f.totAmount    -- (kept for older code paths)
   local vtip = CreateFrame("Frame", nil, f)
-  vtip:SetAllPoints(f.vendor)
+  vtip:SetPoint("BOTTOMLEFT", 8, 6)
+  vtip:SetSize(AMOUNT_X, 62)
   vtip:EnableMouse(true)
-  Tip(vtip, "Selling the crafts to a vendor", {
-    "Vendor: what you get by selling every crafted item to a vendor.",
-    "Saved: vendor money minus the cost of the reagents. Negative: what the leveling really costs you." })
+  Tip(vtip, "What the leveling costs", {
+    "AH price: buying every reagent at the current Auction House prices.",
+    "Sold to vendor: what you get back by selling every crafted item to a vendor.",
+    "Total: green = you make money, red = what the leveling really costs you." })
   f.pin = Button(f, "Pin", 60, 22, function()
     if state.plan then ns.ShowPinned(true) end
   end)
@@ -479,13 +490,22 @@ local function CreatePlanner(parent, key)
       self.reags:SetData(reag)
       local missing = 0
       for _ in pairs(plan.missing) do missing = missing + 1 end
-      local text = ("Total: %s  |cffaaaaaa(%d-%d)|r"):format(ns.Money(plan.total), plan.opts.from,
-        plan.stoppedAt or plan.opts.to)
-      if plan.stoppedAt then text = text .. "  |cffff5555stopped at " .. plan.stoppedAt .. "|r" end
-      self.total:SetText(text)
+      local range = ("|cffaaaaaa(%d-%d)|r"):format(plan.opts.from, plan.stoppedAt or plan.opts.to)
+      if plan.stoppedAt then range = range .. " |cffff5555stopped|r" end
+      self.ahLabel:SetText("AH price " .. range)
+      self.ahAmount:SetText(ns.Money(plan.total))
       local vend, unknown = ns.PlanVendorValue(plan)
-      local more = unknown > 0 and "|cff999999+?|r" or ""
-      self.vendor:SetText(("Vendor: %s%s    Saved: %s%s"):format(ns.Money(vend), more, ns.SignedMoney(vend - plan.total), more))
+      local more = unknown > 0 and " |cff999999+?|r" or ""
+      self.vendLabel:SetText("Sold to vendor")
+      self.vendAmount:SetText("+ " .. ns.Money(vend) .. more)
+      local net = vend - plan.total
+      self.totLabel:SetText("Total")
+      if net >= 0 then
+        self.totAmount:SetText("|cff55ff55+ " .. ns.Money(net) .. "|r")
+      else
+        self.totAmount:SetText("|cffff5555- " .. ns.Money(-net) .. "|r")
+      end
+      self.invoiceRule:Show()
       if plan.stoppedAt or missing > 0 then
         self.status:SetText(("|cffff9933%d reagent(s) have no price yet: scan them to use more recipes.|r"):format(missing))
       end
@@ -493,8 +513,8 @@ local function CreatePlanner(parent, key)
       self.steps:SetData({})
       self.reags:SetData({})
       self.reagTitle:SetText("")
-      self.total:SetText("")
-      self.vendor:SetText("")
+      for _, fs in ipairs({ self.ahLabel, self.ahAmount, self.vendLabel, self.vendAmount, self.totLabel, self.totAmount }) do fs:SetText("") end
+      self.invoiceRule:Hide()
     end
   end
 

@@ -31,8 +31,11 @@ All professions are there, the ones your character knows at the top with their l
 
 Each line is a craft with its level range, how many to make and its cost, plus the total for the whole range. A panel also opens **next to your profession window** (movable), so you can follow the list while crafting.
 
-*   **Vendor**: what you get back by selling every crafted item to a vendor.
-*   **Saved**: that vendor money minus the cost of the reagents. Negative means what the leveling really costs you.
+The bottom of the list reads like a quote:
+
+*   **AH price**: buying every reagent at the current Auction House prices.
+*   **Sold to vendor**: what you get back by selling every crafted item to a vendor.
+*   **Total**: in green when you make money, in red when it is what the leveling really costs you.
 
 ![SkillRat next to the profession window](https://i.imgur.com/sqbWc6Z.png)
 
