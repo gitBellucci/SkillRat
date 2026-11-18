@@ -23,10 +23,6 @@ A **SkillRat tab** in the Auction House, next to Buy, Sell and Auctions:
 *   **Scan prices**: every reagent of the selected profession, one search each, with every listing and its quantity.
 *   **Scan whole AH**: every price at once (the game allows it once every 15 minutes).
 
-![SkillRat in the Auction House](https://i.imgur.com/G0jCa3E.png)
-
-_The SkillRat tab in the Auction House: crafts on the left, reagents to buy on the right._
-
 ### ![](https://i.imgur.com/fdFvlqu.png) ___**Your professions first**___
 
 All professions are there, the ones your character knows at the top with their level. Pick one, set a **minimum and maximum level**, choose which recipes to use (trainer + known, known only, or all including drops), and **exclude reagents** you don't want to use.
@@ -43,10 +39,6 @@ Every reagent in clear columns: how many you need, where it comes from (how many
 
 ![Reagents and the quote](https://i.imgur.com/Oh7x97i.png)
 
-![SkillRat next to the profession window](https://i.imgur.com/sqbWc6Z.png)
-
-_The SkillRat panel opens next to your profession window._
-
 ### ![](https://i.imgur.com/XYm2rDt.png) ___**Save your lists**___
 
 **Save** a list and open it again later from **Lists**, on any character of your account. It keeps the same crafts and is priced again with the prices of the day. Right-click a list to delete it.
@@ -60,8 +52,6 @@ At the Auction House, click a craft in the list: its reagents are shown in the A
 ### ![](https://i.imgur.com/rvyQoSt.png) ___**Pin it**___
 
 Pin the list to keep it on screen while you shop and craft, with the total cost to reach your target. Its **Search AH** button shows only the list's reagents in the Auction House (all at once in Auctionator's Shopping tab), and clicking a craft searches only its reagents.
-
-![The pinned list](https://i.imgur.com/SUrh97p.png)
 
 ### ![](https://i.imgur.com/TQzVxYy.png) ___**Good to know**___
 
