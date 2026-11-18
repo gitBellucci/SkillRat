@@ -380,31 +380,73 @@ local function CreatePlanner(parent, key)
   reagBox:SetPoint("TOPLEFT", stepsBox, "BOTTOMLEFT", 0, -22)
   reagBox:SetPoint("TOPRIGHT", stepsBox, "BOTTOMRIGHT", 0, -22)
   reagBox:SetHeight(150)
+  -- columns, from the right edge of a row: cost | in bags | AH / vendor | (name takes the rest) ; quantity on the left
+  local COL_COST, COL_BAG, COL_SRC, COL_QTY = 78, 54, 64, 30
+  local function ReagColumns(row)
+    if row.qty then return end
+    row.left:SetText("")
+    row.right:ClearAllPoints()
+    row.right:SetPoint("RIGHT", -4, 0)
+    row.right:SetWidth(COL_COST)
+    row.qty = Label(row, "GameFontNormal")
+    row.qty:SetPoint("LEFT", row.icon, "RIGHT", 2, 0)
+    row.qty:SetWidth(COL_QTY)
+    row.qty:SetJustifyH("RIGHT")
+    row.bag = Label(row, "GameFontHighlight")
+    row.bag:SetPoint("RIGHT", row.right, "LEFT", -6, 0)
+    row.bag:SetWidth(COL_BAG)
+    row.bag:SetJustifyH("RIGHT")
+    row.src = Label(row, "GameFontHighlightSmall")
+    row.src:SetPoint("RIGHT", row.bag, "LEFT", -6, 0)
+    row.src:SetWidth(COL_SRC)
+    row.src:SetJustifyH("RIGHT")
+    row.name = Label(row, "GameFontHighlight")
+    row.name:SetPoint("LEFT", row.qty, "RIGHT", 6, 0)
+    row.name:SetPoint("RIGHT", row.src, "LEFT", -6, 0)
+    row.name:SetJustifyH("LEFT")
+    row.name:SetWordWrap(false)
+  end
   f.reags = ScrollList(reagBox, ROW_H, function(row, x)
+    ReagColumns(row)
     row.icon:SetTexture(ns.ItemIcon(x.id))
     local p = ns.DB().prices[x.id]
-    local avail
     if ns.VendorPrice(x.id) then
-      avail = "|cff88ccffvendor|r"
+      row.src:SetText("|cff88ccffvendor|r")
     elseif p then
-      avail = ((x.short and "|cffff5555" or "|cff999999") .. "%d on AH|r"):format(p.qty or 0)
+      row.src:SetText(((x.short and "|cffff5555" or "|cff999999") .. "%d AH|r"):format(p.qty or 0))
     else
-      avail = "|cffff5555not scanned|r"
+      row.src:SetText("|cffff5555no price|r")
     end
     local have = (C_Item and C_Item.GetItemCount and C_Item.GetItemCount(x.id)) or (GetItemCount and GetItemCount(x.id)) or 0
-    local bag
     if have >= x.need then
-      bag = "|cff55ff55you have it|r"
+      row.bag:SetText(("|cff55ff55%d/%d|r"):format(math.min(have, x.need), x.need))
     elseif have > 0 then
-      bag = ("|cffffd100you have %d/%d|r"):format(have, x.need)
+      row.bag:SetText(("|cffffd100%d/%d|r"):format(have, x.need))
     else
-      bag = ""
+      row.bag:SetText("|cff666666-|r")
     end
-    row.left:SetText(("|cffffd100%d|r %s  %s  %s"):format(x.need, ns.ItemName(x.id) or ("item " .. x.id), avail, bag))
+    row.qty:SetText(x.need)
+    row.name:SetText(ns.ItemName(x.id) or ("item " .. x.id))
     row.right:SetText(x.cost and ns.Money(x.cost) or "")
   end, function(x) ns.Scanner.SearchInAH(x.id) end)
   f.reags:SetPoint("TOPLEFT", 4, -4)
   f.reags:SetPoint("BOTTOMRIGHT", -26, 4)
+  -- column headers, on the title line, right-aligned like the columns
+  local function ColHeader(text, rightOffset, width)
+    local h = Label(f, "GameFontDisableSmall", text)
+    h:SetPoint("BOTTOMRIGHT", reagBox, "TOPRIGHT", -rightOffset, 4)
+    h:SetWidth(width)
+    h:SetJustifyH("RIGHT")
+    return h
+  end
+  local base = 26 + 4                                   -- scroll bar + row margin
+  ColHeader("Cost", base, COL_COST)
+  ColHeader("Bags", base + COL_COST + 6, COL_BAG)
+  local srcHeader = ColHeader("Source", base + COL_COST + 6 + COL_BAG + 6, COL_SRC)
+  -- the title stops before the headers (long craft names are cut with "...")
+  f.reagTitle:SetPoint("RIGHT", srcHeader, "LEFT", -6, 0)
+  f.reagTitle:SetJustifyH("LEFT")
+  f.reagTitle:SetWordWrap(false)
 
   -- Auction House: the panel takes the whole window, crafts on the left and reagents on the right
   if key == "ah" then
@@ -413,6 +455,7 @@ local function CreatePlanner(parent, key)
     stepsBox:SetPoint("BOTTOMRIGHT", f, "BOTTOM", -4, 70)
     f.reagTitle:ClearAllPoints()
     f.reagTitle:SetPoint("BOTTOMLEFT", reagBox, "TOPLEFT", 2, 4)
+    f.reagTitle:SetPoint("RIGHT", srcHeader, "LEFT", -6, 0)
     reagBox:ClearAllPoints()
     reagBox:SetPoint("TOPLEFT", f, "TOP", 4, -214)
     reagBox:SetPoint("BOTTOMRIGHT", -8, 70)
@@ -502,11 +545,11 @@ local function CreatePlanner(parent, key)
           x.short = all and all.short
         end
         local r = state.step.recipe
-        self.reagTitle:SetText(("Reagents for %dx %s (click: show in the AH)"):format(state.step.crafts,
+        self.reagTitle:SetText(("Reagents for %dx %s"):format(state.step.crafts,
           r[2] > 0 and ns.ItemName(r[2]) or ns.SpellName(r[1]) or "?"))
       else
         reag = plan.reagents
-        self.reagTitle:SetText("All reagents (click a craft to see only its reagents)")
+        self.reagTitle:SetText("All reagents")
       end
       self.reags:SetData(reag)
       local missing = 0
