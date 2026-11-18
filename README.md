@@ -6,9 +6,9 @@ _Level your professions for the fewest coins. A stingy rat that reads the Auctio
 
 Tell it "Blacksmithing, 75 to 150". It checks every recipe you can use, the chance each craft gives a skill point at each level, and the current Auction House listings. Then it gives you the cheapest list of crafts, how many of each, and the total cost.
 
-![SkillRat in the Auction House](https://i.imgur.com/G0jCa3E.png)
+![The SkillRat panel](https://i.imgur.com/FWeAVa5.png)
 
-_The SkillRat tab in the Auction House: Blacksmithing 190 to 250, crafts on the left, reagents to buy on the right._
+_First Aid 75 to 150: the crafts to make, the reagents to buy, and what it really costs._
 
 ### ![](https://i.imgur.com/BE8MCib.png) ___**The cheapest path, for real**___
 
@@ -23,6 +23,10 @@ A **SkillRat tab** in the Auction House, next to Buy, Sell and Auctions:
 *   **Scan prices**: every reagent of the selected profession, one search each, with every listing and its quantity.
 *   **Scan whole AH**: every price at once (the game allows it once every 15 minutes).
 
+![SkillRat in the Auction House](https://i.imgur.com/G0jCa3E.png)
+
+_The SkillRat tab in the Auction House: crafts on the left, reagents to buy on the right._
+
 ### ![](https://i.imgur.com/fdFvlqu.png) ___**Your professions first**___
 
 All professions are there, the ones your character knows at the top with their level. Pick one, set a **minimum and maximum level**, choose which recipes to use (trainer + known, known only, or all including drops), and **exclude reagents** you don't want to use.
@@ -31,18 +35,23 @@ All professions are there, the ones your character knows at the top with their l
 
 Each line is a craft with its level range, how many to make and its cost, plus the total for the whole range. A panel also opens **next to your profession window** (movable), so you can follow the list while crafting.
 
-The bottom of the list reads like a quote:
+Every reagent in clear columns: how many you need, where it comes from (how many are on the Auction House, or vendor), **what you already have in your bags** (green when you have enough), and its cost. The bottom reads like a quote:
 
 *   **AH price**: buying every reagent at the current Auction House prices.
 *   **Sold to vendor**: what you get back by selling every crafted item to a vendor.
 *   **Total**: in green when you make money, in red when it is what the leveling really costs you.
 
+![Reagents and the quote](https://i.imgur.com/Oh7x97i.png)
+
 ![SkillRat next to the profession window](https://i.imgur.com/sqbWc6Z.png)
 
 _The SkillRat panel opens next to your profession window._
 
-*   Each reagent shows what you already have in your bags: **you have it** in green, or **you have 12/52**.
-*   **Save** a list and open it again later from **Lists**, on any character of your account. It is priced again with the prices of the day.
+### ![](https://i.imgur.com/XYm2rDt.png) ___**Save your lists**___
+
+**Save** a list and open it again later from **Lists**, on any character of your account. It keeps the same crafts and is priced again with the prices of the day. Right-click a list to delete it.
+
+![Saved lists](https://i.imgur.com/FyvVIaV.png)
 
 ### ![](https://i.imgur.com/Ry7P4Pz.png) ___**Shop in one click**___
 
