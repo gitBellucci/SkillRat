@@ -1,0 +1,17 @@
+## Interface: 16001, 11509
+## Title: SkillRat
+## Notes: Level your professions for the fewest coins: cheapest craft list from Auction House prices and quantities.
+## Author: Bellucci
+## Version: 1.0.2
+## IconTexture: Interface\AddOns\SkillRat\Media\icon
+## SavedVariables: SkillRatDB
+## SavedVariablesPerCharacter: SkillRatCharDB
+## OptionalDeps: Auctionator
+## X-License: GPL-2.0
+
+Data\Recipes.lua
+Data\Vendor.lua
+Core.lua
+Scanner.lua
+Planner.lua
+UI.lua
