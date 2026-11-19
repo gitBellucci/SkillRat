@@ -1,3 +1,8 @@
+# 1.0.2
+
+- **Reagents now come from WoW Forever's own game data**: about 130 recipes need different reagents on Forever than in Classic (Minor Mana Potion: Mageroyal and Peacebloom). Thanks for the report!
+- **"Trainer + known recipes" no longer suggests recipes you have to buy or find**: SkillRat now reads from the game which recipes are learned from a recipe item. Those only show with "All recipes", or once you know them.
+
 # 1.0.1
 
 - **Skill-up levels now come from WoW Forever's own game data**: the ~1,500 recipes Forever added or changed (First Aid potions, rebalanced Leatherworking...) now give the right number of crafts. Recreate your lists.
